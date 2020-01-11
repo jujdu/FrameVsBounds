@@ -14,7 +14,7 @@ Please, feel free to use this helpful app.
 
 If after trying the app you still don't understand what's going on, then look at [this brilliant article](https://medium.com/@suragch/frame-vs-bounds-in-ios-107990ad53ee). Thanks @Suragch.
 
-Good luck!
+### Good luck!
 
 <p align="center">
  <img src="https://giant.gfycat.com/WildPepperyAyeaye.gif"/>
