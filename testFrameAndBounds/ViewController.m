@@ -25,14 +25,12 @@
     self.testImageView.backgroundColor = [UIColor redColor];
 
     [self setupPopUpView];
-    [self setupPopUpViewShowAnimation];
-    [self setupPopUpViewHideAnimation];
     
     [self setupSliders];
     [self updateLabels];
 }
 
-#pragma mark - Show AlertAnimation
+#pragma mark - Show PopUpAnimation
 - (void)setupPopUpViewShowAnimation {
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTapBlockView:)];
     [self.blockAreaView addGestureRecognizer:tapGesture];
@@ -56,7 +54,7 @@
     }];
 }
 
-#pragma mark - Hide AlertAnimation
+#pragma mark - Hide PopUpAnimation
 - (void)setupPopUpViewHideAnimation {
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTapView:)];
     [self.backgroundView addGestureRecognizer:tapGesture];
@@ -96,13 +94,16 @@
                                       140);
     self.popUpView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.001, 0.001);
 
-    self.textLabel.text = @"Apple's documantation said, \"Do not use frame if view is transformed since it will not correctly reflect the actual location of the view. Use bounds + center instead\". So as the view was rotated you cannot set your own frame, only read it.";
+    self.textLabel.text = @"The Apple's documentation said, \"Do not use frame if view is transformed since it will not correctly reflect the actual location of the view. Use bounds + center instead\". So as the view was rotated you cannot set your own frame, only read it.";
     self.textLabel.textAlignment = NSTextAlignmentLeft;
     self.textLabel.numberOfLines = 0;
     self.textLabel.frame = CGRectMake(10, 10,
                                       CGRectGetMaxX(self.popUpView.bounds) - 20,
                                       140);
     [self.textLabel sizeToFit];
+    
+    [self setupPopUpViewShowAnimation];
+    [self setupPopUpViewHideAnimation];
 }
 
 - (void)setupSliders {
@@ -155,7 +156,8 @@
     self.boundsHeightLabel.text = [NSString stringWithFormat:@"bounds height=%d", (int)(self.testView.bounds.size.height)];
     self.centerXLabel.text      = [NSString stringWithFormat:@"center x=%d", (int)(self.testView.center.x)];
     self.centerYLabel.text      = [NSString stringWithFormat:@"center y=%d", (int)(self.testView.center.y)];
-    self.rotationViewLabel.text = [NSString stringWithFormat:@"rotation view=%1.1f", (self.rotationViewSlider.value)];
+    int degrees = (int)(self.rotationViewSlider.value * (180/M_PI));
+    self.rotationViewLabel.text = [NSString stringWithFormat:@"rotation view=%d°", degrees];
     self.scaleViewLabel.text    = [NSString stringWithFormat:@"scale view=%1.1f", (self.scaleViewSlider.value)];
 }
 
@@ -164,11 +166,12 @@
 - (void)animateViewChanges:(void (^)(CGRect frame, CGRect bounds))block {
     CGRect frame = self.testView.frame;
     CGRect bounds = self.testView.bounds;
-    block(frame, bounds);
-    [self updateLabels];
-    [self setupSliders];
-//    [UIView animateWithDuration:0.1 animations:^{
-//    }];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        block(frame, bounds);
+        [self updateLabels];
+        [self setupSliders];
+    });
 }
 
 #pragma mark - Test Frames

@@ -11,8 +11,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CustomView : UIView
-@property (weak, nonatomic) UIView *alertView;
-@property (weak, nonatomic) UIView *backgroundView;
+@property (weak, nonatomic) NSString *text;
+
+- (instancetype)initWithFrame:(CGRect)frame withText:(NSString *)text inView:(UIView *)view forAreaView:(UIView *)forAreaView;
 @end
 
 NS_ASSUME_NONNULL_END
