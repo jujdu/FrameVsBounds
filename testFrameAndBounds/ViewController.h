@@ -13,7 +13,7 @@
 @property (weak, nonatomic) IBOutlet UIView *testView;
 @property (weak, nonatomic) IBOutlet UIImageView *testImageView;
 
-@property (weak, nonatomic) IBOutlet UIView *blockView;
+@property (weak, nonatomic) IBOutlet UIView *blockAreaView;
 
 @property (weak, nonatomic) IBOutlet UILabel *frameXLabel;
 @property (weak, nonatomic) IBOutlet UILabel *frameYLabel;

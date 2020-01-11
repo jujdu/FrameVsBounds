@@ -255,7 +255,7 @@
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nB2-4I-ZSX">
                                 <rect key="frame" x="16" y="288" width="190" height="153"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" systemColor="separatorColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
@@ -267,7 +267,7 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
-                        <outlet property="blockView" destination="nB2-4I-ZSX" id="vJ5-Cy-8K1"/>
+                        <outlet property="blockAreaView" destination="nB2-4I-ZSX" id="vJ5-Cy-8K1"/>
                         <outlet property="boundsHeightLabel" destination="l7K-LR-yeo" id="EhX-zy-KVt"/>
                         <outlet property="boundsHeightSlider" destination="Yzp-YU-WU7" id="y47-XP-D6i"/>
                         <outlet property="boundsWidthLabel" destination="dya-Ry-3RQ" id="IDf-3N-0PF"/>

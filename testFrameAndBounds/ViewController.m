@@ -9,7 +9,9 @@
 #import "ViewController.h"
 
 @interface ViewController ()
-@property (weak, nonatomic) UIView *alertView;
+@property (weak, nonatomic) UIView *popUpView;
+@property (weak, nonatomic) UIView *backgroundView;
+@property (weak, nonatomic) UILabel *textLabel;
 @end
 
 @implementation ViewController
@@ -17,72 +19,91 @@
 #pragma mark - LifeCycle
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     [self.view sendSubviewToBack:self.testView];
-    
-    [self setupAlertViewShowAnimation];
-}
+    [self.testImageView setImage:[UIImage imageNamed:@"corgi"]];
+    self.testImageView.backgroundColor = [UIColor redColor];
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
+    [self setupPopUpView];
+    [self setupPopUpViewShowAnimation];
+    [self setupPopUpViewHideAnimation];
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.testImageView setImage:[UIImage imageNamed:@"corgi"]];
-        [self setupSliders];
-        [self updateLabels];
-        self.testImageView.backgroundColor = [UIColor redColor];
-    });
+    [self setupSliders];
+    [self updateLabels];
 }
 
 #pragma mark - Show AlertAnimation
-- (void)setupAlertViewShowAnimation {
+- (void)setupPopUpViewShowAnimation {
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTapBlockView:)];
-    [self.blockView addGestureRecognizer:tapGesture];
+    [self.blockAreaView addGestureRecognizer:tapGesture];
 }
 
 - (void)handleTapBlockView:(UITapGestureRecognizer *)tapGesture {
-    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame), 0, 0)];
-    view.backgroundColor = [UIColor redColor];
+    [UIView animateWithDuration:0.3/1.5 animations:^{
+        self.popUpView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.1, 1.1);
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:0.3/2 animations:^{
+            self.popUpView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.9, 0.9);
+        } completion:^(BOOL finished) {
+            [UIView animateWithDuration:0.3/2 animations:^{
+                self.popUpView.transform = CGAffineTransformIdentity;
+            }];
+        }];
+    }];
     
-    self.alertView = view;
-    [self setupAlertViewHideAnimation];
-
-    [UIView animateWithDuration:0.3 animations:^{
-        [self.view addSubview:view];
-        view.frame = CGRectMake(CGRectGetMidX(self.view.frame) - 75, CGRectGetMidY(self.view.frame) - 75, 150, 150);
+    [UIView animateWithDuration:0.6 animations:^{
+        self.backgroundView.alpha = 1;
     }];
 }
 
 #pragma mark - Hide AlertAnimation
-- (void)setupAlertViewHideAnimation {
+- (void)setupPopUpViewHideAnimation {
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTapView:)];
-    [self.alertView addGestureRecognizer:tapGesture];
+    [self.backgroundView addGestureRecognizer:tapGesture];
 }
 
 - (void)handleTapView:(UITapGestureRecognizer *)tapGesture {
-    printf("asdasd");
-    NSLog(@"%@", NSStringFromCGPoint([tapGesture locationInView:self.alertView]));
-//    if ([tapGesture locationInView:self.alertView].x < 0) {
-//
-//        [UIView animateWithDuration:0.3 animations:^{
-//            self.alertView.frame = CGRectMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame), 0, 0);
-//        } completion:^(BOOL finished) {
-//            [self.alertView removeFromSuperview];
-//        }];
-//    }
-}
-
-#pragma mark - Support methods
-
-- (void)animateViewChanges:(void (^)(CGRect frame, CGRect bounds))block {
-    [UIView animateWithDuration:0.1 animations:^{
-        CGRect frame = self.testView.frame;
-        CGRect bounds = self.testView.bounds;
-        block(frame, bounds);
-        [self updateLabels];
-        [self setupSliders];
+    [UIView animateWithDuration:0.3 animations:^{
+        self.backgroundView.alpha = 0;
+        self.popUpView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.001, 0.001);
     }];
 }
 
+#pragma mark - Configure Views
+- (void)setupPopUpView {
+    [self.blockAreaView setHidden:YES];
+    
+    UIView *backgroundView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetMaxX(self.view.frame), CGRectGetMaxY(self.view.frame))];
+    UIView *popUpView = [[UIView alloc]init];
+    UILabel *label = [[UILabel alloc]init];
+    
+    self.backgroundView = backgroundView;
+    self.popUpView = popUpView;
+    self.textLabel = label;
+    
+    [self.view addSubview:self.backgroundView];
+    [self.view addSubview:self.popUpView];
+    [self.popUpView addSubview:self.textLabel];
+    
+    self.backgroundView.alpha = 0;
+    self.backgroundView.backgroundColor = [UIColor colorWithRed:50/255 green:50/255 blue:50/255 alpha:0.2];
+    
+    self.popUpView.backgroundColor = [UIColor whiteColor];
+    self.popUpView.layer.cornerRadius = 5;
+    self.popUpView.frame = CGRectMake(CGRectGetMidX(self.view.frame) - (CGRectGetMaxX(self.view.frame) - 25) / 2,
+                                      CGRectGetMidY(self.view.frame) - 75,
+                                      CGRectGetMaxX(self.view.frame) - 25,
+                                      140);
+    self.popUpView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.001, 0.001);
+
+    self.textLabel.text = @"Apple's documantation said, \"Do not use frame if view is transformed since it will not correctly reflect the actual location of the view. Use bounds + center instead\". So as the view was rotated you cannot set your own frame, only read it.";
+    self.textLabel.textAlignment = NSTextAlignmentLeft;
+    self.textLabel.numberOfLines = 0;
+    self.textLabel.frame = CGRectMake(10, 10,
+                                      CGRectGetMaxX(self.popUpView.bounds) - 20,
+                                      140);
+    [self.textLabel sizeToFit];
+}
 
 - (void)setupSliders {
     self.frameXSlider.minimumValue       = -CGRectGetMaxX(self.view.frame);
@@ -138,7 +159,19 @@
     self.scaleViewLabel.text    = [NSString stringWithFormat:@"scale view=%1.1f", (self.scaleViewSlider.value)];
 }
 
-#pragma mark - Frames
+#pragma mark - Support methods
+
+- (void)animateViewChanges:(void (^)(CGRect frame, CGRect bounds))block {
+    CGRect frame = self.testView.frame;
+    CGRect bounds = self.testView.bounds;
+    block(frame, bounds);
+    [self updateLabels];
+    [self setupSliders];
+//    [UIView animateWithDuration:0.1 animations:^{
+//    }];
+}
+
+#pragma mark - Test Frames
 - (IBAction)changeFrameX:(UISlider *)sender {
     [self animateViewChanges:^(CGRect frame, CGRect bounds){
         frame.origin.x = sender.value;
@@ -167,7 +200,7 @@
     }];
 }
 
-#pragma mark - Bounds
+#pragma mark - Test Bounds
 - (IBAction)changeBoundsX:(UISlider *)sender {
     [self animateViewChanges:^(CGRect frame, CGRect bounds){
         bounds.origin.x = sender.value;
@@ -196,7 +229,7 @@
     }];
 }
 
-#pragma mark - Center
+#pragma mark - Test Center
 - (IBAction)changeCenterX:(UISlider *)sender {
     [self animateViewChanges:^(CGRect frame, CGRect bounds){
         CGPoint point = CGPointMake(sender.value, self.testView.center.y);
@@ -211,7 +244,7 @@
     }];
 }
 
-#pragma mark - Rotation & Scale
+#pragma mark - Test Rotation & Scale
 
 /*
  because Apple's doc: "frame is animatable. do not use frame if view is transformed since it will not correctly reflect the actual
@@ -223,22 +256,23 @@
 - (IBAction)rotateView:(UISlider *)sender {
     [self animateViewChanges:^(CGRect frame, CGRect bounds){
         if (sender.value == 0) {
-
             [self.frameXSlider setEnabled:YES];
             [self.frameYSlider setEnabled:YES];
             [self.frameWidthSlider setEnabled:YES];
             [self.frameHeightSlider setEnabled:YES];
+            [self.blockAreaView setHidden:YES];
         } else {
             [self.frameXSlider setEnabled:NO];
             [self.frameYSlider setEnabled:NO];
             [self.frameWidthSlider setEnabled:NO];
             [self.frameHeightSlider setEnabled:NO];
+            [self.blockAreaView setHidden:NO];
         }
         self.testView.transform = CGAffineTransformMakeRotation(sender.value);
     }];
 }
 
-#pragma mark - Scale
+#pragma mark - Test Scale
 - (IBAction)scaleView:(UISlider *)sender {
     [self animateViewChanges:^(CGRect frame, CGRect bounds){
         self.testView.transform = CGAffineTransformMakeScale(sender.value, sender.value);
